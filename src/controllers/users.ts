@@ -28,9 +28,14 @@ export const getUserById = (req: Request, res: Response) => {
 export const createUser = (req: Request, res: Response) => {
   const { name, about, avatar } = req.body;
 
-  User.create({ name, about, avatar})
+  User.create({ name, about, avatar })
     .then((user) => res.status(201).send({ data: user }))
-    .catch(() => res.status(DATA_ERROR_CODE).send({ message: DATA_ERROR_MESSAGE }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return res.status(DATA_ERROR_CODE).send({ message: DATA_ERROR_MESSAGE });
+      }
+      res.status(DEFAULT_ERROR_CODE).send({ message: DEFAULT_ERROR_MESSAGE });
+    });
 };
 
 export const updateUser = (req: Request, res: Response) => {

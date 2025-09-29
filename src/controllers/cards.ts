@@ -20,7 +20,12 @@ export const createCard = (req: Request, res: Response) => {
 // @ts-expect-error 2339
   Card.create({ name, link, owner: req.user._id })
     .then(card => res.status(201).send({ data: card }))
-    .catch(() => res.status(DATA_ERROR_CODE).send({ message: DATA_ERROR_MESSAGE }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return res.status(DATA_ERROR_CODE).send({ message: DATA_ERROR_MESSAGE });
+      }
+      res.status(DEFAULT_ERROR_CODE).send({ message: DEFAULT_ERROR_MESSAGE });
+    });
 };
 
 export const deleteCardById = (req: Request, res: Response) => {
